@@ -16,7 +16,7 @@
 :root{
   --lapis:#14203a; --lapis-2:#1c2c4d; --lapis-3:#253a63;
   --vellum:#ece2c8; --vellum-2:#e0d2ad; --vellum-edge:#cdb98a;
-  --ink:#2b2117; --ink-soft:#6a5634;
+  --ink:#231a10; --ink-soft:#4e3d20;
   --gold:#b48a3c; --gold-hi:#ecd18a; --gold-lo:#7d5d22;
   --bronze:#6e5626; --crimson:#8c2b22; --verdigris:#3f6b5c;
   --ok:#3f6b5c; --red:#8c2b22;
@@ -26,7 +26,7 @@
 *{box-sizing:border-box}
 html{background:var(--lapis)}
 body{
-  margin:0;color:var(--vellum);font-family:var(--mincho);font-size:15px;line-height:1.75;
+  margin:0;color:var(--vellum);font-family:var(--mincho);font-size:16px;font-weight:500;line-height:1.8;
   background:
     radial-gradient(120% 60% at 50% -10%, #2c4472 0%, transparent 60%),
     radial-gradient(1px 1px at 12% 18%, rgba(236,209,138,.55), transparent 60%),
@@ -48,7 +48,7 @@ header h1{
   -webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 2px 0 rgba(0,0,0,.35));
 }
-header p{margin:4px 0 0;font-size:13px;color:#c9bb98;letter-spacing:.08em}
+header p{margin:4px 0 0;font-size:14px;color:#e2d6b4;letter-spacing:.08em}
 .flourish{display:block;margin:14px auto 0;width:220px;height:16px}
 
 /* ---------- 羊皮紙の巻物 ---------- */
@@ -78,9 +78,9 @@ h2::after{
 }
 
 /* ---------- 入力 ---------- */
-label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:3px;letter-spacing:.04em}
+label{display:block;font-size:14px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;letter-spacing:.04em}
 input,select,textarea{
-  width:100%;font-family:var(--mincho);font-size:16px;color:var(--ink);
+  width:100%;font-family:var(--mincho);font-size:16px;font-weight:500;color:var(--ink);
   background:rgba(255,250,236,.65);border:1px solid #b8a274;border-radius:2px;padding:8px 10px;
   appearance:none;-webkit-appearance:none;
 }
@@ -93,7 +93,8 @@ input.bad{border-color:var(--crimson);background:rgba(140,43,34,.08)}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 @media(min-width:520px){.grid.three{grid-template-columns:repeat(3,1fr)}}
 .full{grid-column:1/-1}
-.note{font-size:12.5px;color:var(--ink-soft);line-height:1.8}
+.note{font-size:14px;color:var(--ink-soft);line-height:1.85}
+::placeholder{color:#8a7a5c}
 
 /* 防御側の盾 */
 .shields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
@@ -103,7 +104,7 @@ input.bad{border-color:var(--crimson);background:rgba(140,43,34,.08)}
   clip-path:polygon(0 0,100% 0,100% 70%,50% 100%,0 70%);
   box-shadow:inset 0 0 0 1px var(--gold);
 }
-.shield label{color:#d9c99f;text-align:center}
+.shield label{color:#efe3c2;text-align:center}
 .shield select{
   background-color:transparent;border:none;border-bottom:1px solid var(--gold);color:var(--gold-hi);
   font-family:var(--numeral);font-weight:700;font-size:30px;text-align:center;text-align-last:center;
@@ -119,7 +120,7 @@ input.bad{border-color:var(--crimson);background:rgba(140,43,34,.08)}
   font-weight:800;font-size:18px;letter-spacing:.06em;background:transparent;border:none;
   border-bottom:1px dashed #b8a274;border-radius:0;padding:4px 2px;flex:1;min-width:0;
 }
-.models{display:flex;align-items:center;gap:4px;flex:none;font-size:13px;color:var(--ink-soft)}
+.models{display:flex;align-items:center;gap:4px;flex:none;font-size:14px;font-weight:700;color:var(--ink-soft)}
 .models input{width:56px;text-align:center;padding:6px 4px;font-family:var(--numeral);font-weight:700;font-size:19px}
 .del{
   flex:none;width:36px;height:36px;border-radius:50%;border:1px solid #b8a274;background:transparent;
@@ -129,7 +130,7 @@ input.bad{border-color:var(--crimson);background:rgba(140,43,34,.08)}
 .profile{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--bronze)}
 .profile .th{
   background:linear-gradient(180deg,#7f6530,var(--bronze));color:#f4e8c8;
-  font-size:11.5px;text-align:center;padding:4px 2px;letter-spacing:.02em;white-space:nowrap;
+  font-size:12.5px;font-weight:700;text-align:center;padding:5px 1px;letter-spacing:0;white-space:nowrap;
 }
 .profile .td{border-left:1px solid #cdb98a;padding:2px}
 .profile .td:nth-child(6){border-left:none}
@@ -140,12 +141,12 @@ input.bad{border-color:var(--crimson);background:rgba(140,43,34,.08)}
 .profile .td input.dcustom{font-size:15px;padding:4px 2px;border-top:1px dashed #b8a274;margin:0}
 .dcustom.hide{display:none}
 details{margin-top:12px}
-summary{cursor:pointer;color:var(--bronze);font-size:13.5px;list-style:none}
+summary{cursor:pointer;color:#4e3a12;font-weight:700;font-size:14.5px;list-style:none}
 summary::-webkit-details-marker{display:none}
 summary::before{content:"";display:inline-block;width:0;height:0;border:5px solid transparent;border-left:6px solid var(--gold);margin-right:6px;transform-origin:3px 5px;transition:transform .2s}
 details[open] > summary::before{transform:rotate(90deg)}
 details .grid{margin-top:10px}
-.wres{margin-top:12px;text-align:right;font-size:13px;color:var(--ink-soft)}
+.wres{margin-top:12px;text-align:right;font-size:14px;color:var(--ink-soft)}
 .wres .out{font-family:var(--numeral);font-weight:700;font-size:22px;color:var(--ink);margin-left:6px}
 
 .addbtn{
@@ -164,7 +165,7 @@ details .grid{margin-top:10px}
 .sbtn.gold{background:linear-gradient(180deg,#f0d690 0%,#c99b45 55%,#a57a30 100%);border-color:var(--gold-lo);font-weight:800;color:#2a1d0c;letter-spacing:.1em}
 .sbtn.red{color:var(--crimson)}
 .sbtn.red.armed{background:var(--crimson);color:#fbefe2;border-color:#5e1a14}
-.msg{min-height:20px;font-size:13px;color:var(--verdigris);margin-top:8px;text-align:center}
+.msg{min-height:20px;font-size:14px;font-weight:700;color:var(--verdigris);margin-top:8px;text-align:center}
 textarea{font-size:12px;font-family:ui-monospace,Menlo,monospace;margin-top:6px}
 
 /* ---------- 結果 ---------- */
@@ -181,7 +182,7 @@ textarea{font-size:12px;font-family:ui-monospace,Menlo,monospace;margin-top:6px}
     repeating-conic-gradient(from 0deg,#d8b061 0 4deg,#8d6a2b 4deg 8deg);
   box-shadow:0 0 0 2px #5e4719,0 0 28px rgba(236,209,138,.18);
 }
-.seal .lbl{font-size:12.5px;color:#d3c39a;letter-spacing:.15em}
+.seal .lbl{font-size:14px;color:#efe3c2;letter-spacing:.15em}
 .seal .num{
   font-family:var(--numeral);font-weight:700;font-size:60px;line-height:1;margin-top:2px;
   background:linear-gradient(180deg,#fbeab5 10%,#d9b05a 55%,#a07832 100%);
@@ -190,11 +191,11 @@ textarea{font-size:12px;font-family:ui-monospace,Menlo,monospace;margin-top:6px}
 .seal.flash{animation:glow .7s ease-out}
 @keyframes glow{0%{box-shadow:0 0 0 2px #5e4719,0 0 50px rgba(236,209,138,.55)}100%{box-shadow:0 0 0 2px #5e4719,0 0 28px rgba(236,209,138,.18)}}
 @media (prefers-reduced-motion:reduce){.seal.flash{animation:none}summary::before{transition:none}}
-.verdict .sub{font-size:13px;color:#c9bb98;margin-bottom:14px}
-.steps{display:grid;grid-template-columns:1fr auto;gap:0;text-align:left;max-width:380px;margin:0 auto;font-size:14px}
+.verdict .sub{font-size:14px;color:#e2d6b4;margin-bottom:14px}
+.steps{display:grid;grid-template-columns:1fr auto;gap:0;text-align:left;max-width:400px;margin:0 auto;font-size:15px}
 .steps div{padding:5px 0}
 .steps div:nth-child(odd){
-  color:#d6c8a3;
+  color:#ece1c3;
   background:linear-gradient(to right,transparent 0,transparent 100%) ;
   border-bottom:1px dotted rgba(180,138,60,.45);
 }
@@ -206,9 +207,9 @@ textarea{font-size:12px;font-family:ui-monospace,Menlo,monospace;margin-top:6px}
 .steps div.hl:nth-child(even){font-size:22px}
 
 /* ---------- 分布 ---------- */
-.kill{text-align:center;font-size:14px;margin:6px 0 12px}
+.kill{text-align:center;font-size:15px;font-weight:700;margin:6px 0 12px}
 .kill b{font-family:var(--numeral);font-size:30px;color:var(--crimson);margin-left:4px;vertical-align:-3px}
-.bar{display:grid;grid-template-columns:62px 1fr 54px;align-items:center;gap:8px;font-size:13px;margin:4px 0}
+.bar{display:grid;grid-template-columns:64px 1fr 56px;align-items:center;gap:8px;font-size:14px;margin:4px 0}
 .bar span:first-child{color:var(--ink-soft)}
 .bar span:last-child{text-align:right;font-family:var(--numeral);font-weight:700;font-size:16px}
 .bar .t{height:12px;background:#d6c59c;border:1px solid #bba675;border-radius:1px;overflow:hidden}
@@ -219,7 +220,7 @@ textarea{font-size:12px;font-family:ui-monospace,Menlo,monospace;margin-top:6px}
 .help ol{margin:12px 0 8px;padding-left:22px}
 .help p{margin:0}
 
-footer{text-align:center;font-size:12px;color:#9f9479;line-height:1.9;margin-top:26px}
+footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top:26px}
 </style>
 </head>
 <body>
