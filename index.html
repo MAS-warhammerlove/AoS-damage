@@ -6,116 +6,276 @@
 <title>AoS ダメージ期待値計算（非公式）</title>
 <meta name="description" content="Age of Sigmar の攻撃回数・ヒット・ウーンズ・貫通・ダメージ・セーヴ・加護から、与ダメージの期待値と確率を計算する非公式ファンツール。">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#14110f">
+<meta name="theme-color" content="#14203a">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Shippori+Mincho+B1:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#14110f; --panel:#1f1a16; --panel2:#2a231d; --line:#3d332a;
-  --gold:#d4a24c; --gold2:#f1cf86; --text:#efe6d8; --dim:#a8998a; --red:#c8553d; --ok:#7fb069;
+  --lapis:#14203a; --lapis-2:#1c2c4d; --lapis-3:#253a63;
+  --vellum:#ece2c8; --vellum-2:#e0d2ad; --vellum-edge:#cdb98a;
+  --ink:#2b2117; --ink-soft:#6a5634;
+  --gold:#b48a3c; --gold-hi:#ecd18a; --gold-lo:#7d5d22;
+  --bronze:#6e5626; --crimson:#8c2b22; --verdigris:#3f6b5c;
+  --ok:#3f6b5c; --red:#8c2b22;
+  --mincho:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+  --numeral:"Cormorant Garamond","Shippori Mincho B1",serif;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans JP",system-ui,sans-serif;font-size:15px;line-height:1.5}
-.wrap{max-width:760px;margin:0 auto;padding:16px 14px 80px}
-header{text-align:center;padding:8px 0 14px;border-bottom:1px solid var(--line);margin-bottom:16px}
-header .en{font-family:Cinzel,serif;color:var(--gold);letter-spacing:.2em;font-size:12px}
-header h1{margin:2px 0 0;font-size:21px;font-weight:900}
-h2{font-size:14px;color:var(--gold2);margin:0 0 10px;letter-spacing:.05em;display:flex;align-items:center;gap:8px}
-h2::before{content:"";width:4px;height:14px;background:var(--gold);border-radius:2px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+html{background:var(--lapis)}
+body{
+  margin:0;color:var(--vellum);font-family:var(--mincho);font-size:15px;line-height:1.75;
+  background:
+    radial-gradient(120% 60% at 50% -10%, #2c4472 0%, transparent 60%),
+    radial-gradient(1px 1px at 12% 18%, rgba(236,209,138,.55), transparent 60%),
+    radial-gradient(1px 1px at 78% 9%, rgba(236,209,138,.45), transparent 60%),
+    radial-gradient(1px 1px at 62% 31%, rgba(236,209,138,.35), transparent 60%),
+    radial-gradient(1px 1px at 28% 41%, rgba(236,209,138,.3), transparent 60%),
+    radial-gradient(1px 1px at 90% 52%, rgba(236,209,138,.3), transparent 60%),
+    var(--lapis);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:640px;margin:0 auto;padding:28px 14px 64px}
+
+/* ---------- 題字 ---------- */
+header{text-align:center;margin-bottom:26px}
+header h1{
+  margin:0;font-weight:800;font-size:clamp(26px,7vw,34px);letter-spacing:.12em;line-height:1.3;
+  background:linear-gradient(180deg,#f6e3a8 0%,#d6ad57 48%,#9b7330 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.35));
+}
+header p{margin:4px 0 0;font-size:13px;color:#c9bb98;letter-spacing:.08em}
+.flourish{display:block;margin:14px auto 0;width:220px;height:16px}
+
+/* ---------- 羊皮紙の巻物 ---------- */
+.scroll{
+  position:relative;color:var(--ink);
+  background:
+    radial-gradient(130% 90% at 50% 40%, #f3ead3 40%, var(--vellum-2) 100%);
+  border:1px solid var(--gold-lo);
+  box-shadow:inset 0 0 0 3px var(--vellum), inset 0 0 0 4px var(--gold), 0 10px 28px rgba(4,8,20,.45);
+  border-radius:3px;padding:22px 18px 18px;margin-bottom:18px;
+}
+.scroll::before{
+  content:"";position:absolute;inset:6px;pointer-events:none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M1 17V1h16' fill='none' stroke='%23b48a3c' stroke-width='1.5'/%3E%3Cpath d='M5 5l3-3 3 3-3 3z' fill='%23b48a3c'/%3E%3C/svg%3E") top left no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M17 17V1H1' fill='none' stroke='%23b48a3c' stroke-width='1.5'/%3E%3Cpath d='M13 5l-3-3-3 3 3 3z' fill='%23b48a3c'/%3E%3C/svg%3E") top right no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M1 1v16h16' fill='none' stroke='%23b48a3c' stroke-width='1.5'/%3E%3Cpath d='M5 13l3 3 3-3-3-3z' fill='%23b48a3c'/%3E%3C/svg%3E") bottom left no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M17 1v16H1' fill='none' stroke='%23b48a3c' stroke-width='1.5'/%3E%3Cpath d='M13 13l-3 3-3-3 3-3z' fill='%23b48a3c'/%3E%3C/svg%3E") bottom right no-repeat;
+}
+.scroll > *{position:relative}
+h2{
+  margin:0 0 14px;text-align:center;font-weight:800;font-size:19px;letter-spacing:.2em;color:var(--ink);
+}
+h2::after{
+  content:"";display:block;margin:6px auto 0;width:150px;height:9px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='9'%3E%3Cpath d='M0 4.5h62M88 4.5h62' stroke='%23b48a3c'/%3E%3Cpath d='M75 0l4.5 4.5L75 9l-4.5-4.5z' fill='%23b48a3c'/%3E%3Ccircle cx='66' cy='4.5' r='1.5' fill='%23b48a3c'/%3E%3Ccircle cx='84' cy='4.5' r='1.5' fill='%23b48a3c'/%3E%3C/svg%3E") center no-repeat;
+}
+
+/* ---------- 入力 ---------- */
+label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:3px;letter-spacing:.04em}
+input,select,textarea{
+  width:100%;font-family:var(--mincho);font-size:16px;color:var(--ink);
+  background:rgba(255,250,236,.65);border:1px solid #b8a274;border-radius:2px;padding:8px 10px;
+  appearance:none;-webkit-appearance:none;
+}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%236e5626'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 9px center;padding-right:26px;
+}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
+input.bad{border-color:var(--crimson);background:rgba(140,43,34,.08)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:520px){.grid.three{grid-template-columns:repeat(3,1fr)}}
 .full{grid-column:1/-1}
-label{display:block;font-size:12px;color:var(--dim);margin-bottom:3px}
-input,select{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:16px;font-family:inherit;appearance:none;-webkit-appearance:none}
-select{background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:26px}
-input:focus,select:focus{outline:none;border-color:var(--gold)}
-input.bad{border-color:var(--red)}
-.dcustom{margin-top:6px}
-.brow{display:flex;gap:8px;margin-top:10px}
-.sbtn{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px 6px;font-size:14px;font-family:inherit;cursor:pointer}
-.sbtn.gold{background:var(--gold);color:#1a140e;border-color:var(--gold);font-weight:700}
-.sbtn.red{color:var(--red);border-color:#5a3328}
-.sbtn.red.armed{background:var(--red);color:#fff}
-.msg{min-height:18px;font-size:13px;color:var(--ok);margin-top:6px}
-textarea{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12px;font-family:monospace}
+.note{font-size:12.5px;color:var(--ink-soft);line-height:1.8}
+
+/* 防御側の盾 */
+.shields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.shield{
+  text-align:center;padding:12px 8px 16px;color:var(--vellum);
+  background:linear-gradient(180deg,var(--lapis-3),var(--lapis));
+  clip-path:polygon(0 0,100% 0,100% 70%,50% 100%,0 70%);
+  box-shadow:inset 0 0 0 1px var(--gold);
+}
+.shield label{color:#d9c99f;text-align:center}
+.shield select{
+  background-color:transparent;border:none;border-bottom:1px solid var(--gold);color:var(--gold-hi);
+  font-family:var(--numeral);font-weight:700;font-size:30px;text-align:center;text-align-last:center;
+  padding:0 18px 2px;line-height:1.2;width:auto;min-width:96px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23ecd18a'/%3E%3C/svg%3E");
+}
+.shield select option{color:var(--ink);font-size:16px}
+.savemod{margin-top:12px}
+
+/* ---------- 武器（ウォースクロール風） ---------- */
+.wtop{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.wtop .f-name{
+  font-weight:800;font-size:18px;letter-spacing:.06em;background:transparent;border:none;
+  border-bottom:1px dashed #b8a274;border-radius:0;padding:4px 2px;flex:1;min-width:0;
+}
+.models{display:flex;align-items:center;gap:4px;flex:none;font-size:13px;color:var(--ink-soft)}
+.models input{width:56px;text-align:center;padding:6px 4px;font-family:var(--numeral);font-weight:700;font-size:19px}
+.del{
+  flex:none;width:36px;height:36px;border-radius:50%;border:1px solid #b8a274;background:transparent;
+  color:var(--ink-soft);font-size:16px;cursor:pointer;font-family:var(--mincho)
+}
+.del:hover{color:var(--crimson);border-color:var(--crimson)}
+.profile{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--bronze)}
+.profile .th{
+  background:linear-gradient(180deg,#7f6530,var(--bronze));color:#f4e8c8;
+  font-size:11.5px;text-align:center;padding:4px 2px;letter-spacing:.02em;white-space:nowrap;
+}
+.profile .td{border-left:1px solid #cdb98a;padding:2px}
+.profile .td:nth-child(6){border-left:none}
+.profile .td select,.profile .td input{
+  border:none;background-color:transparent;text-align:center;text-align-last:center;
+  font-family:var(--numeral);font-weight:700;font-size:21px;padding:4px 14px 4px 2px;background-position:right 3px center;
+}
+.profile .td input.dcustom{font-size:15px;padding:4px 2px;border-top:1px dashed #b8a274;margin:0}
 .dcustom.hide{display:none}
-.wtop{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-.wtop input{font-weight:700}
-.icon{flex:none;background:none;border:1px solid var(--line);color:var(--dim);border-radius:8px;width:40px;height:40px;font-size:18px;cursor:pointer}
-.icon:hover{color:var(--red);border-color:var(--red)}
-details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
-summary{cursor:pointer;color:var(--gold);font-size:13px;list-style:none}
+details{margin-top:12px}
+summary{cursor:pointer;color:var(--bronze);font-size:13.5px;list-style:none}
 summary::-webkit-details-marker{display:none}
-summary::before{content:"▸ "}
-details[open] summary::before{content:"▾ "}
+summary::before{content:"";display:inline-block;width:0;height:0;border:5px solid transparent;border-left:6px solid var(--gold);margin-right:6px;transform-origin:3px 5px;transition:transform .2s}
+details[open] > summary::before{transform:rotate(90deg)}
 details .grid{margin-top:10px}
-.wres{margin-top:10px;font-size:13px;color:var(--dim);text-align:right}
-.wres b{color:var(--gold2);font-size:16px}
-.btn{width:100%;background:transparent;border:1px dashed var(--gold);color:var(--gold);padding:11px;border-radius:10px;font-size:15px;font-family:inherit;cursor:pointer;margin-bottom:14px}
-.btn:hover{background:rgba(212,162,76,.08)}
-.result{background:linear-gradient(160deg,#2b2117,#1b1612);border:1px solid var(--gold);border-radius:14px;padding:16px;margin-bottom:14px}
-.big{text-align:center;padding:4px 0 12px}
-.big .lbl{font-size:12px;color:var(--dim)}
-.big .num{font-family:Cinzel,serif;font-size:52px;color:var(--gold2);line-height:1.1}
-.big .sub{font-size:12px;color:var(--dim)}
-.steps{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px;border-top:1px solid var(--line);padding-top:10px}
-.steps div:nth-child(odd){color:var(--dim)}
-.steps div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
-.steps .hl{color:var(--gold2)!important}
-.dist{margin-top:6px}
-.bar{display:grid;grid-template-columns:60px 1fr 52px;align-items:center;gap:8px;font-size:13px;margin:3px 0;font-variant-numeric:tabular-nums}
-.bar .t{height:14px;background:var(--panel2);border-radius:4px;overflow:hidden}
-.bar .f{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px}
-.bar span:first-child{color:var(--dim)}
-.bar span:last-child{text-align:right}
-.note{font-size:12px;color:var(--dim)}
-.target{display:flex;gap:10px;align-items:end;margin-bottom:10px}
-.target>div{flex:1}
-.kill{font-size:14px;margin-top:4px}
-.kill b{color:var(--gold2);font-size:20px}
+.wres{margin-top:12px;text-align:right;font-size:13px;color:var(--ink-soft)}
+.wres .out{font-family:var(--numeral);font-weight:700;font-size:22px;color:var(--ink);margin-left:6px}
+
+.addbtn{
+  display:block;width:100%;margin:0 0 22px;padding:12px;cursor:pointer;
+  background:transparent;color:var(--gold-hi);font-family:var(--mincho);font-size:15px;letter-spacing:.12em;
+  border:1px solid var(--gold);border-radius:2px;box-shadow:inset 0 0 0 3px var(--lapis),inset 0 0 0 4px rgba(180,138,60,.5);
+}
+.addbtn:hover{background:rgba(180,138,60,.08)}
+
+/* ---------- キャラ保存 ---------- */
+.brow{display:flex;gap:8px;margin-top:14px}
+.sbtn{
+  flex:1;cursor:pointer;font-family:var(--mincho);font-size:14px;color:var(--ink);padding:10px 4px;border-radius:2px;
+  background:linear-gradient(180deg,#f6eedb,#ddcda6);border:1px solid #a98a4e;
+}
+.sbtn.gold{background:linear-gradient(180deg,#f0d690 0%,#c99b45 55%,#a57a30 100%);border-color:var(--gold-lo);font-weight:800;color:#2a1d0c;letter-spacing:.1em}
+.sbtn.red{color:var(--crimson)}
+.sbtn.red.armed{background:var(--crimson);color:#fbefe2;border-color:#5e1a14}
+.msg{min-height:20px;font-size:13px;color:var(--verdigris);margin-top:8px;text-align:center}
+textarea{font-size:12px;font-family:ui-monospace,Menlo,monospace;margin-top:6px}
+
+/* ---------- 結果 ---------- */
+.verdict{
+  position:relative;text-align:center;padding:26px 18px 20px;margin-bottom:18px;
+  background:linear-gradient(180deg,var(--lapis-2),#111b31);
+  border:1px solid var(--gold);box-shadow:inset 0 0 0 3px var(--lapis-2),inset 0 0 0 4px rgba(180,138,60,.55),0 12px 30px rgba(0,0,0,.4);
+  border-radius:3px;
+}
+.seal{
+  width:196px;height:196px;margin:0 auto 6px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:
+    radial-gradient(circle,var(--lapis-2) 0 60%,transparent 61%),
+    repeating-conic-gradient(from 0deg,#d8b061 0 4deg,#8d6a2b 4deg 8deg);
+  box-shadow:0 0 0 2px #5e4719,0 0 28px rgba(236,209,138,.18);
+}
+.seal .lbl{font-size:12.5px;color:#d3c39a;letter-spacing:.15em}
+.seal .num{
+  font-family:var(--numeral);font-weight:700;font-size:60px;line-height:1;margin-top:2px;
+  background:linear-gradient(180deg,#fbeab5 10%,#d9b05a 55%,#a07832 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.seal.flash{animation:glow .7s ease-out}
+@keyframes glow{0%{box-shadow:0 0 0 2px #5e4719,0 0 50px rgba(236,209,138,.55)}100%{box-shadow:0 0 0 2px #5e4719,0 0 28px rgba(236,209,138,.18)}}
+@media (prefers-reduced-motion:reduce){.seal.flash{animation:none}summary::before{transition:none}}
+.verdict .sub{font-size:13px;color:#c9bb98;margin-bottom:14px}
+.steps{display:grid;grid-template-columns:1fr auto;gap:0;text-align:left;max-width:380px;margin:0 auto;font-size:14px}
+.steps div{padding:5px 0}
+.steps div:nth-child(odd){
+  color:#d6c8a3;
+  background:linear-gradient(to right,transparent 0,transparent 100%) ;
+  border-bottom:1px dotted rgba(180,138,60,.45);
+}
+.steps div:nth-child(even){
+  text-align:right;padding-left:12px!important;font-family:var(--numeral);font-weight:700;font-size:18px;color:var(--vellum);
+  border-bottom:1px dotted rgba(180,138,60,.45);
+}
+.steps .hl{color:var(--gold-hi)!important;border-bottom:none!important;padding-top:9px!important}
+.steps div.hl:nth-child(even){font-size:22px}
+
+/* ---------- 分布 ---------- */
+.kill{text-align:center;font-size:14px;margin:6px 0 12px}
+.kill b{font-family:var(--numeral);font-size:30px;color:var(--crimson);margin-left:4px;vertical-align:-3px}
+.bar{display:grid;grid-template-columns:62px 1fr 54px;align-items:center;gap:8px;font-size:13px;margin:4px 0}
+.bar span:first-child{color:var(--ink-soft)}
+.bar span:last-child{text-align:right;font-family:var(--numeral);font-weight:700;font-size:16px}
+.bar .t{height:12px;background:#d6c59c;border:1px solid #bba675;border-radius:1px;overflow:hidden}
+.bar .f{height:100%;background:linear-gradient(180deg,#ecd18a,#b48a3c 60%,#8d6a2b)}
+
+/* ---------- 使い方 ---------- */
+.help > summary{color:var(--ink);font-weight:800;font-size:16px;letter-spacing:.1em;text-align:center}
+.help ol{margin:12px 0 8px;padding-left:22px}
+.help p{margin:0}
+
+footer{text-align:center;font-size:12px;color:#9f9479;line-height:1.9;margin-top:26px}
 </style>
 </head>
 <body>
 <div class="wrap">
+
 <header>
-  <div class="en">AGE OF SIGMAR · UNOFFICIAL</div>
   <h1>ダメージ期待値計算</h1>
+  <p>エイジ・オブ・シグマー 非公式ファンツール</p>
+  <svg class="flourish" viewBox="0 0 220 16" aria-hidden="true"><path d="M0 8h84M136 8h84" stroke="#b48a3c"/><path d="M110 0l8 8-8 8-8-8z" fill="none" stroke="#ecd18a"/><path d="M110 4l4 4-4 4-4-4z" fill="#b48a3c"/><circle cx="92" cy="8" r="2" fill="#b48a3c"/><circle cx="128" cy="8" r="2" fill="#b48a3c"/></svg>
 </header>
 
-<div class="card">
+<details class="scroll help">
+  <summary>使い方</summary>
+  <ol>
+    <li>防御側のセーヴと加護を選ぶ</li>
+    <li>武器の攻撃回数・ヒット・ウーンズ・貫通・ダメージを入れる</li>
+    <li>期待ダメージと、Nダメージ以上入る確率が自動で出る</li>
+  </ol>
+  <p class="note">武器が複数あるキャラは「武器を追加」で増やせます。振り直しとクリティカルは各武器の「修正・振り直し・クリティカル」から。<br>
+  キャラ名を入れて「保存」すると、次から「保存済みキャラを呼び出す」で一度に入力できます。防御力と加護も保存しておけば、防御側の「保存キャラから選ぶ」でセットできます。<br>
+  「相手の残りヘルス」を入れると、倒しきれる確率がわかります。<br>
+  データはこの端末のブラウザ内だけに保存されます。機種変更などに備えて「バックアップ」で控えを取っておいてください。<br>
+  ホーム画面に追加すると、アプリのようにオフラインでも使えます。</p>
+</details>
+
+<section class="scroll">
   <h2>防御側</h2>
-  <div class="grid">
-    <div class="full"><label>保存キャラから選ぶ（防御力・加護をセット）</label>
-      <select id="defChar"></select></div>
-    <div><label>セーヴ</label>
+  <label for="defChar">保存キャラから選ぶ</label>
+  <select id="defChar"></select>
+  <div class="shields">
+    <div class="shield"><label for="save">セーヴ</label>
       <select id="save">
         <option value="2">2+</option><option value="3">3+</option><option value="4" selected>4+</option>
         <option value="5">5+</option><option value="6">6+</option><option value="7">なし</option>
       </select></div>
-    <div><label>加護（ワード）</label>
+    <div class="shield"><label for="ward">加護</label>
       <select id="ward">
         <option value="0" selected>なし</option><option value="6">6+</option><option value="5">5+</option>
         <option value="4">4+</option><option value="3">3+</option>
       </select></div>
-    <div><label>セーヴ修正</label>
-      <select id="saveMod">
-        <option value="-1">−1</option><option value="0" selected>±0</option><option value="1">+1（遮蔽など）</option>
-      </select></div>
   </div>
-</div>
+  <div class="savemod"><label for="saveMod">セーヴ修正</label>
+    <select id="saveMod">
+      <option value="-1">−1</option><option value="0" selected>±0</option><option value="1">+1（遮蔽など）</option>
+    </select></div>
+</section>
 
-<div class="card" id="charCard">
-  <h2>攻撃側キャラクター</h2>
-  <label>保存済みキャラを呼び出す</label>
+<section class="scroll" id="charCard">
+  <h2>攻撃側</h2>
+  <label for="charList">保存済みキャラを呼び出す</label>
   <select id="charList"></select>
-  <div class="grid" style="margin-top:10px">
-    <div class="full"><label>キャラ名</label><input id="charName" placeholder="例：インドラスタ"></div>
-    <div><label>このキャラの防御力</label>
+  <div class="grid" style="margin-top:12px">
+    <div class="full"><label for="charName">キャラ名</label><input id="charName" placeholder="例：ロード・セレスタント"></div>
+    <div><label for="charSave">このキャラのセーヴ</label>
       <select id="charSave"><option value="2">2+</option><option value="3">3+</option><option value="4" selected>4+</option><option value="5">5+</option><option value="6">6+</option><option value="7">なし</option></select></div>
-    <div><label>このキャラの加護</label>
+    <div><label for="charWard">このキャラの加護</label>
       <select id="charWard"><option value="0" selected>なし</option><option value="6">6+</option><option value="5">5+</option><option value="4">4+</option><option value="3">3+</option></select></div>
   </div>
   <div class="brow">
@@ -123,77 +283,82 @@ details .grid{margin-top:10px}
     <button class="sbtn" id="charNew">新規（クリア）</button>
     <button class="sbtn red" id="charDel">削除</button>
   </div>
-  <div class="msg" id="charMsg"></div>
+  <div class="msg" id="charMsg" role="status"></div>
   <details>
     <summary>バックアップ（機種変更・再インストール用）</summary>
-    <p class="note">「書き出し」で出る文字をメモ等に保存しておき、復元時は貼り付けて「読み込み」。</p>
-    <textarea id="backup" rows="4"></textarea>
+    <p class="note">「書き出し」で出る文字をメモなどに保存しておき、戻すときは貼り付けて「読み込み」を押します。</p>
+    <textarea id="backup" rows="4" aria-label="バックアップ用の文字"></textarea>
     <div class="brow">
       <button class="sbtn" id="bkOut">書き出し</button>
       <button class="sbtn" id="bkCopy">コピー</button>
       <button class="sbtn" id="bkIn">読み込み</button>
     </div>
   </details>
-</div>
+</section>
 
 <div id="weapons"></div>
-<button class="btn" id="add">＋ 武器プロファイルを追加</button>
+<button class="addbtn" id="add">＋ 武器を追加</button>
 
-<div class="result">
-  <div class="big">
-    <div class="lbl">与えるダメージの期待値</div>
+<section class="verdict" aria-live="polite">
+  <div class="seal" id="seal">
+    <div class="lbl">期待ダメージ</div>
     <div class="num" id="total">0.00</div>
-    <div class="sub" id="totalSub"></div>
   </div>
+  <div class="sub" id="totalSub"></div>
   <div class="steps" id="steps"></div>
-</div>
+</section>
 
-<div class="card">
+<section class="scroll">
   <h2>ダメージの分布</h2>
-  <div class="target">
-    <div><label>相手の残りヘルス（合計）</label><input id="hp" type="number" min="1" value="10" inputmode="numeric"></div>
-  </div>
-  <div class="kill">合計 <span id="hpEcho">10</span> ダメージ以上を与える確率：<b id="killP">–</b></div>
+  <label for="hp">相手の残りヘルス（合計）</label>
+  <input id="hp" type="number" min="1" value="10" inputmode="numeric">
+  <div class="kill">合計 <span id="hpEcho">10</span> ダメージ以上を与える確率<b id="killP">–</b></div>
   <div class="dist" id="dist"></div>
-  <p class="note">20,000回のシミュレーションによる「Nダメージ以上を与える確率」。ダメージは余剰分も次のモデルに持ち越す前提です。</p>
-</div>
+  <p class="note">20,000回のシミュレーションで出した「Nダメージ以上を与える確率」です。余ったダメージは次のモデルに持ち越す前提です。</p>
+</section>
 
-<div class="card note">
-  <h2>計算ルール</h2>
-  ・ヒット／ウーンズは無修正の1で常に失敗、無修正の6で常に成功。<br>
-  ・クリティカルは無修正の6（振り直し後の出目）で判定。<br>
-  ・セーヴの必要値 ＝ セーヴ値 ＋ 貫通 − セーヴ修正。無修正の1は常に失敗。<br>
-  ・Crit (Mortal) はウーンズとセーヴを飛ばし、武器のダメージ分の致命傷ダメージ。<br>
-  ・加護はダメージ1点ごとに判定（致命傷ダメージにも適用）。<br>
-  ・入力・保存したキャラはお使いのブラウザ内にのみ保存され、外部には送信されません。<br>
-  ・攻撃回数・ダメージはリストから選択（D3・2D3・D6なども可）。リストにない値は「手入力…」で「2D6+1」などと入力。
-</div>
-  <p class="note" style="margin-top:14px;text-align:center">非公式のファンツールです。Games Workshop社とは一切関係ありません。<br>Warhammer、Age of Sigmar は Games Workshop Limited の商標です。</p>
+<details class="scroll help">
+  <summary>計算のルール</summary>
+  <p class="note" style="margin-top:10px">
+  ヒットとウーンズは、無修正の1で常に失敗、無修正の6で常に成功します。<br>
+  クリティカルは無修正の6（振り直し後の出目）で判定します。<br>
+  セーヴの必要値は「セーヴ値＋貫通−セーヴ修正」。無修正の1は常に失敗です。<br>
+  Crit (Mortal) はウーンズとセーヴを飛ばし、武器のダメージ分の致命傷ダメージになります。<br>
+  加護はダメージ1点ごとに判定します（致命傷にも適用）。<br>
+  攻撃回数とダメージはリストから選べます。リストにない値は「手入力…」で「2D6+1」のように入力します。<br>
+  入力・保存したキャラはお使いのブラウザ内にだけ保存され、外部には送信されません。</p>
+</details>
+
+<footer>
+  非公式のファンツールです。Games Workshop社とは一切関係ありません。<br>
+  Warhammer、Age of Sigmar は Games Workshop Limited の商標です。
+</footer>
 </div>
 
 <template id="wtpl">
-<div class="card weapon">
+<section class="scroll weapon">
   <div class="wtop">
-    <input class="f-name" value="武器">
-    <button class="icon del" title="削除">✕</button>
+    <input class="f-name" value="武器" aria-label="武器の名前">
+    <span class="models">×<input class="f-models" type="number" min="1" value="1" inputmode="numeric" aria-label="モデル数">体</span>
+    <button class="del" title="この武器を削除" aria-label="この武器を削除">✕</button>
   </div>
-  <div class="grid">
-    <div><label>モデル数</label><input class="f-models" type="number" min="1" value="1" inputmode="numeric"></div>
-    <div><label>攻撃回数</label><select class="s-atk dsel" data-for="f-atk"></select><input class="f-atk dcustom" value="2" placeholder="例: 2D6+1"></div>
-    <div><label>ヒット</label><select class="f-hit"></select></div>
-    <div><label>ウーンズ</label><select class="f-wound"></select></div>
-    <div><label>貫通</label><select class="f-rend"></select></div>
-    <div><label>ダメージ</label><select class="s-dmg dsel" data-for="f-dmg"></select><input class="f-dmg dcustom" value="1" placeholder="例: D6+2"></div>
+  <div class="profile">
+    <div class="th">攻撃回数</div><div class="th">ヒット</div><div class="th">ウーンズ</div><div class="th">貫通</div><div class="th">ダメージ</div>
+    <div class="td"><select class="s-atk dsel" data-for="f-atk" aria-label="攻撃回数"></select><input class="f-atk dcustom" value="2" placeholder="2D6+1" aria-label="攻撃回数（手入力）"></div>
+    <div class="td"><select class="f-hit" aria-label="ヒット"></select></div>
+    <div class="td"><select class="f-wound" aria-label="ウーンズ"></select></div>
+    <div class="td"><select class="f-rend" aria-label="貫通"></select></div>
+    <div class="td"><select class="s-dmg dsel" data-for="f-dmg" aria-label="ダメージ"></select><input class="f-dmg dcustom" value="1" placeholder="D6+2" aria-label="ダメージ（手入力）"></div>
   </div>
   <details>
     <summary>修正・振り直し・クリティカル</summary>
     <div class="grid">
-      <div class="full"><label>クリティカル（無修正6）</label>
+      <div class="full"><label>クリティカル（無修正の6）</label>
         <select class="f-crit">
           <option value="none">なし</option>
-          <option value="2hits">Crit (2 Hits)：2ヒット</option>
-          <option value="auto">Crit (Auto-wound)：自動ウーンズ</option>
-          <option value="mortal">Crit (Mortal)：致命傷</option>
+          <option value="2hits">Crit (2 Hits)：2ヒットになる</option>
+          <option value="auto">Crit (Auto-wound)：自動でウーンズ成功</option>
+          <option value="mortal">Crit (Mortal)：致命傷ダメージ</option>
         </select></div>
       <div><label>ヒット修正</label><select class="f-hmod mod"></select></div>
       <div><label>ヒット振り直し</label><select class="f-hrr rr"></select></div>
@@ -201,8 +366,8 @@ details .grid{margin-top:10px}
       <div><label>ウーンズ振り直し</label><select class="f-wrr rr"></select></div>
     </div>
   </details>
-  <div class="wres">この武器の期待値 <b class="out">0.00</b></div>
-</div>
+  <div class="wres">この武器の期待値<span class="out">0.00</span></div>
+</section>
 </template>
 
 <script>
@@ -509,6 +674,16 @@ loadChars(); renderCharLists(null);
 if (!load()) addWeapon({'f-name':'近接武器','f-models':5,'f-atk':'2','f-dmg':'1'});
 renderCharLists($('#charName').value.trim());
 calc();
+
+// 結果が変わったら印章を光らせる
+(() => {
+  const seal = document.getElementById('seal'); let last = null;
+  new MutationObserver(() => {
+    const v = document.getElementById('total').textContent;
+    if (v === last) return; last = v;
+    seal.classList.remove('flash'); void seal.offsetWidth; seal.classList.add('flash');
+  }).observe(document.getElementById('total'), {childList:true, characterData:true, subtree:true});
+})();
 if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js'); } catch(e){} }
 </script>
 </body>
