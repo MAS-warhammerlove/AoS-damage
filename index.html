@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AoS ダメージ期待値計算（非公式）</title>
-<meta name="description" content="Age of Sigmar の攻撃回数・ヒット・ウーンズ・貫通・ダメージ・セーヴ・加護から、与ダメージの期待値と確率を計算する非公式ファンツール。">
+<meta name="description" content="Age of Sigmar の攻撃回数・ヒット・ウーンズ・貫通・ダメージ・セーブ・加護から、与ダメージの期待値と確率を計算する非公式ファンツール。">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#14203a">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -385,7 +385,7 @@ footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top
 <details class="scroll help">
   <summary>使い方</summary>
   <ol>
-    <li>防御側のセーヴと加護を選ぶ</li>
+    <li>防御側のセーブと加護を選ぶ</li>
     <li>武器の攻撃回数・ヒット・ウーンズ・貫通・ダメージを入れる</li>
     <li>期待ダメージと、Nダメージ以上入る確率が自動で出る</li>
   </ol>
@@ -401,7 +401,7 @@ footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top
   <label for="defChar">保存キャラから選ぶ</label>
   <select id="defChar"></select>
   <div class="shields">
-    <div class="shield"><label for="save">セーヴ</label>
+    <div class="shield"><label for="save">セーブ</label>
       <select id="save">
         <option value="2">2+</option><option value="3">3+</option><option value="4" selected>4+</option>
         <option value="5">5+</option><option value="6">6+</option><option value="7">なし</option>
@@ -412,7 +412,7 @@ footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top
         <option value="4">4+</option><option value="3">3+</option>
       </select></div>
   </div>
-  <div class="savemod"><label for="saveMod">セーヴ修正</label>
+  <div class="savemod"><label for="saveMod">セーブ修正</label>
     <select id="saveMod">
       <option value="-1">−1</option><option value="0" selected>±0</option><option value="1">+1（遮蔽など）</option>
     </select></div>
@@ -424,7 +424,7 @@ footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top
   <select id="charList"></select>
   <div class="grid" style="margin-top:12px">
     <div class="full"><label for="charName">キャラ名</label><input id="charName" placeholder="例：ロード・セレスタント"></div>
-    <div><label for="charSave">このキャラのセーヴ</label>
+    <div><label for="charSave">このキャラのセーブ</label>
       <select id="charSave"><option value="2">2+</option><option value="3">3+</option><option value="4" selected>4+</option><option value="5">5+</option><option value="6">6+</option><option value="7">なし</option></select></div>
     <div><label for="charWard">このキャラの加護</label>
       <select id="charWard"><option value="0" selected>なし</option><option value="6">6+</option><option value="5">5+</option><option value="4">4+</option><option value="3">3+</option></select></div>
@@ -499,8 +499,8 @@ footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top
   <p class="note" style="margin-top:10px">
   ヒットとウーンズは、無修正の1で常に失敗、無修正の6で常に成功します。<br>
   クリティカルは無修正の6（振り直し後の出目）で判定します。<br>
-  セーヴの必要値は「セーヴ値＋貫通−セーヴ修正」。無修正の1は常に失敗です。<br>
-  Crit (Mortal) はウーンズとセーヴを飛ばし、武器のダメージ分の致命傷ダメージになります。<br>
+  セーブの必要値は「セーブ値＋貫通−セーブ修正」。無修正の1は常に失敗です。<br>
+  Crit (Mortal) はウーンズとセーブを飛ばし、武器のダメージ分の致命傷ダメージになります。<br>
   加護はダメージ1点ごとに判定します（致命傷にも適用）。<br>
   攻撃回数とダメージはリストから選べます。リストにない値は「手入力…」で「2D6+1」のように入力します。<br>
   入力・保存したキャラはお使いのブラウザ内にだけ保存され、外部には送信されません。</p>
@@ -682,10 +682,10 @@ function calc(){
   }
   animateTotal(sum.final);
   const wardTxt = def.ward ? `加護${def.ward}+` : '加護なし';
-  $('#totalSub').textContent = `セーヴ${def.save>=7?'なし':def.save+'+'}・${wardTxt}`;
+  $('#totalSub').textContent = `セーブ${def.save>=7?'なし':def.save+'+'}・${wardTxt}`;
   const rows = [
     ['攻撃数', sum.A], ['ヒット（ウーンズロールへ）', sum.hits], ['ウーンズ成功', sum.wounds],
-    ['セーヴ失敗', sum.unsaved]
+    ['セーブ失敗', sum.unsaved]
   ];
   if (sum.mortalAtk>0) rows.push(['Crit (Mortal) 発生', sum.mortalAtk]);
   rows.push(['ダメージ（加護前）', sum.pre]);
@@ -803,7 +803,7 @@ function renderCharLists(selName){
   const o = chars.map((c,i)=>`<option value="${i}">${esc(c.name)}</option>`).join('');
   $('#charList').innerHTML = `<option value="">— ${chars.length}件保存中・選んで呼び出し —</option>` + o;
   $('#defChar').innerHTML = `<option value="">— 選択しない —</option>` + chars.map((c,i)=>
-    `<option value="${i}">${esc(c.name)}（${c.save>=7?'セーヴなし':c.save+'+'}${+c.ward?'・加護'+c.ward+'+':''}）</option>`).join('');
+    `<option value="${i}">${esc(c.name)}（${c.save>=7?'セーブなし':c.save+'+'}${+c.ward?'・加護'+c.ward+'+':''}）</option>`).join('');
   if (selName!=null){ const i = chars.findIndex(c=>c.name===selName); $('#charList').value = i>=0 ? i : ''; }
 }
 function currentWeapons(){
