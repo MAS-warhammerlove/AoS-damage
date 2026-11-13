@@ -254,16 +254,45 @@ textarea{font-size:12px;font-family:ui-monospace,Menlo,monospace;margin-top:6px}
   clip-path:polygon(0 0,100% 0,91% 50%,100% 100%,0 100%,9% 50%)}
 .verdict .sub{margin-top:4px}
 @media (prefers-reduced-motion:reduce){.rays{animation:none}.medal.flash .burst{animation:none}}
+
+/* ---------- 題字（重厚版） ---------- */
+header.crown{position:relative;text-align:center;margin:6px 0 30px;padding-top:4px}
+.crown-rays{position:absolute;left:50%;top:-40px;width:420px;height:300px;margin-left:-210px;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg at 50% 32%,rgba(236,209,138,.20) 0deg 2.5deg,transparent 2.5deg 9deg);
+  -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 32%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 50% 50% at 50% 32%,#000 20%,transparent 75%)}
+.crown-emblem{position:relative;display:block;width:min(300px,82vw);height:auto;margin:0 auto -6px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.55))}
+header.crown h1{position:relative;margin:0;font-weight:800;font-size:clamp(30px,9vw,42px);letter-spacing:.1em;text-indent:.1em;line-height:1.25;
+  background:linear-gradient(180deg,#fff6d0 0%,#f2d27e 30%,#c4923e 52%,#8f6626 60%,#e9c97a 85%,#fff0c0 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 1px 0 #fff3c0) drop-shadow(0 3px 0 #3a2908) drop-shadow(0 6px 10px rgba(0,0,0,.6)) drop-shadow(0 0 18px rgba(236,209,138,.25))}
+.crown-plaque{position:relative;display:inline-block;margin-top:12px;padding:0 30px;max-width:100%}
+.crown-plaque::before,.crown-plaque::after{content:"";position:absolute;top:50%;width:28px;height:10px;margin-top:-5px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Cpath d='M0 5h18' stroke='%23d4a74e' stroke-width='1.5'/%3E%3Cpath d='M23 0l5 5-5 5-5-5z' fill='%23ecd18a'/%3E%3C/svg%3E") no-repeat}
+.crown-plaque::before{left:0}
+.crown-plaque::after{right:0;transform:scaleX(-1)}
+.crown-plaque span{display:block;white-space:nowrap;padding:5px 12px;font-size:clamp(12px,3.5vw,14px);font-weight:700;letter-spacing:.06em;color:#f4e8c6;
+  background:linear-gradient(180deg,#25396a,#121d38);border:1px solid #c99b45;box-shadow:inset 0 0 0 2px #121d38,inset 0 0 0 3px rgba(201,155,69,.5),0 4px 10px rgba(0,0,0,.45)}
 footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top:26px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<header>
+<header class="crown">
+  <div class="crown-rays" aria-hidden="true"></div>
+  <svg class="crown-emblem" viewBox="0 0 300 100" aria-hidden="true">
+    <defs>
+      <linearGradient id="hGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".45" stop-color="#d9ad55"/><stop offset=".6" stop-color="#9c6f29"/><stop offset="1" stop-color="#e7c574"/></linearGradient>
+      <radialGradient id="hEnamel" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="#4466a8"/><stop offset="1" stop-color="#0d1630"/></radialGradient>
+    </defs>
+    <g><path d="M0,1 L-55.8,0" transform="translate(112,52) rotate(26)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-27.9,-11.0 -62.0,-1.6 Q-31.0,6.1 0,5.0Z" transform="translate(112,52) rotate(26)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-72.0,0" transform="translate(112,52) rotate(14)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-36.0,-11.0 -80.0,-1.6 Q-40.0,6.1 0,5.0Z" transform="translate(112,52) rotate(14)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-86.4,0" transform="translate(112,52) rotate(2)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-43.2,-11.0 -96.0,-1.6 Q-48.0,6.1 0,5.0Z" transform="translate(112,52) rotate(2)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-97.2,0" transform="translate(112,52) rotate(-10)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-48.6,-11.0 -108.0,-1.6 Q-54.0,6.1 0,5.0Z" transform="translate(112,52) rotate(-10)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-100.8,0" transform="translate(112,52) rotate(-22)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-50.4,-11.0 -112.0,-1.6 Q-56.0,6.1 0,5.0Z" transform="translate(112,52) rotate(-22)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-93.6,0" transform="translate(112,52) rotate(-34)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-46.8,-11.0 -104.0,-1.6 Q-52.0,6.1 0,5.0Z" transform="translate(112,52) rotate(-34)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/></g>
+    <g transform="translate(300,0) scale(-1,1)"><path d="M0,1 L-55.8,0" transform="translate(112,52) rotate(26)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-27.9,-11.0 -62.0,-1.6 Q-31.0,6.1 0,5.0Z" transform="translate(112,52) rotate(26)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-72.0,0" transform="translate(112,52) rotate(14)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-36.0,-11.0 -80.0,-1.6 Q-40.0,6.1 0,5.0Z" transform="translate(112,52) rotate(14)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-86.4,0" transform="translate(112,52) rotate(2)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-43.2,-11.0 -96.0,-1.6 Q-48.0,6.1 0,5.0Z" transform="translate(112,52) rotate(2)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-97.2,0" transform="translate(112,52) rotate(-10)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-48.6,-11.0 -108.0,-1.6 Q-54.0,6.1 0,5.0Z" transform="translate(112,52) rotate(-10)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-100.8,0" transform="translate(112,52) rotate(-22)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-50.4,-11.0 -112.0,-1.6 Q-56.0,6.1 0,5.0Z" transform="translate(112,52) rotate(-22)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/><path d="M0,1 L-93.6,0" transform="translate(112,52) rotate(-34)" stroke="#7a5820" stroke-width=".8" opacity=".8"/><path d="M0,0 Q-46.8,-11.0 -104.0,-1.6 Q-52.0,6.1 0,5.0Z" transform="translate(112,52) rotate(-34)" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.1"/></g>
+    <polygon points="150.0,16.0 155.0,38.0 174.0,26.0 162.0,45.0 184.0,50.0 162.0,55.0 174.0,74.0 155.0,62.0 150.0,84.0 145.0,62.0 126.0,74.0 138.0,55.0 116.0,50.0 138.0,45.0 126.0,26.0 145.0,38.0" fill="url(#hGold)" stroke="#3d2b0b" stroke-width="1.5"/>
+    <circle cx="150" cy="50" r="11" fill="url(#hEnamel)" stroke="#3d2b0b" stroke-width="1.2"/>
+    <circle cx="150" cy="50" r="7.5" fill="none" stroke="#e7c574" stroke-width=".8"/>
+  </svg>
   <h1>ダメージ期待値計算</h1>
-  <p>エイジ・オブ・シグマー 非公式ファンツール</p>
-  <svg class="flourish" viewBox="0 0 220 16" aria-hidden="true"><path d="M0 8h84M136 8h84" stroke="#b48a3c"/><path d="M110 0l8 8-8 8-8-8z" fill="none" stroke="#ecd18a"/><path d="M110 4l4 4-4 4-4-4z" fill="#b48a3c"/><circle cx="92" cy="8" r="2" fill="#b48a3c"/><circle cx="128" cy="8" r="2" fill="#b48a3c"/></svg>
+  <div class="crown-plaque"><span>エイジ・オブ・シグマー 非公式ファンツール</span></div>
 </header>
 
 <details class="scroll help">
@@ -369,8 +398,9 @@ footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top
 
 <section class="scroll">
   <h2>ダメージの分布</h2>
-  <label for="hp">相手の残りヘルス（合計）</label>
-  <input id="hp" type="number" min="1" value="10" inputmode="numeric">
+  <label for="hpSel">相手の残りヘルス（合計）</label>
+  <select id="hpSel"></select>
+  <input id="hp" class="dcustom hide" type="number" min="1" value="10" inputmode="numeric" aria-label="相手の残りヘルス（手入力）" style="margin-top:6px">
   <div class="kill">合計 <span id="hpEcho">10</span> ダメージ以上を与える確率<b id="killP">–</b></div>
   <div class="dist" id="dist"></div>
   <p class="note">20,000回のシミュレーションで出した「Nダメージ以上を与える確率」です。余ったダメージは次のモデルに持ち越す前提です。</p>
@@ -747,9 +777,25 @@ $('#bkIn').onclick = ()=>{
 
 ['#save','#ward','#saveMod'].forEach(s=>$(s).addEventListener('change', calc));
 $('#hp').addEventListener('input', ()=>{ renderKill(); save(); });
+// 残りヘルスの選択肢
+const hpOpts = [...Array.from({length:30},(_,i)=>[i+1,i+1]), [35,35],[40,40],[45,45],[50,50],[60,60], ['custom','手入力…']];
+opts($('#hpSel'), hpOpts, 10);
+function syncHp(){
+  const v = String(parseInt($('#hp').value)||10);
+  const hit = [...$('#hpSel').options].some(o=>o.value===v);
+  $('#hpSel').value = hit ? v : 'custom';
+  $('#hp').classList.toggle('hide', hit);
+}
+$('#hpSel').addEventListener('change', ()=>{
+  const v = $('#hpSel').value;
+  if (v !== 'custom'){ $('#hp').value = v; $('#hp').classList.add('hide'); }
+  else { $('#hp').classList.remove('hide'); $('#hp').focus(); }
+  renderKill(); save();
+});
 $('#add').onclick = () => { addWeapon(); calc(); };
 loadChars(); renderCharLists(null);
 if (!load()) addWeapon({'f-name':'近接武器','f-models':5,'f-atk':'2','f-dmg':'1'});
+syncHp();
 renderCharLists($('#charName').value.trim());
 calc();
 

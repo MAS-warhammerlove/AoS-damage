@@ -1,5 +1,5 @@
 // オフライン対応：ページを保存し、ネットがあれば最新版に更新する
-const CACHE = 'aos-dmg-v6';
+const CACHE = 'aos-dmg-v7';
 const FILES = ['./', 'index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
