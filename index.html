@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AoS ダメージ期待値計算（非公式）</title>
+<meta name="description" content="Age of Sigmar の攻撃回数・ヒット・ウーンズ・貫通・ダメージ・セーヴ・加護から、与ダメージの期待値と確率を計算する非公式ファンツール。">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14110f">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14110f; --panel:#1f1a16; --panel2:#2a231d; --line:#3d332a;
+  --gold:#d4a24c; --gold2:#f1cf86; --text:#efe6d8; --dim:#a8998a; --red:#c8553d; --ok:#7fb069;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans JP",system-ui,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding:16px 14px 80px}
+header{text-align:center;padding:8px 0 14px;border-bottom:1px solid var(--line);margin-bottom:16px}
+header .en{font-family:Cinzel,serif;color:var(--gold);letter-spacing:.2em;font-size:12px}
+header h1{margin:2px 0 0;font-size:21px;font-weight:900}
+h2{font-size:14px;color:var(--gold2);margin:0 0 10px;letter-spacing:.05em;display:flex;align-items:center;gap:8px}
+h2::before{content:"";width:4px;height:14px;background:var(--gold);border-radius:2px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+.full{grid-column:1/-1}
+label{display:block;font-size:12px;color:var(--dim);margin-bottom:3px}
+input,select{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:16px;font-family:inherit;appearance:none;-webkit-appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);background-position:calc(100% - 15px) 50%,calc(100% - 10px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:26px}
+input:focus,select:focus{outline:none;border-color:var(--gold)}
+input.bad{border-color:var(--red)}
+.dcustom{margin-top:6px}
+.brow{display:flex;gap:8px;margin-top:10px}
+.sbtn{flex:1;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px 6px;font-size:14px;font-family:inherit;cursor:pointer}
+.sbtn.gold{background:var(--gold);color:#1a140e;border-color:var(--gold);font-weight:700}
+.sbtn.red{color:var(--red);border-color:#5a3328}
+.sbtn.red.armed{background:var(--red);color:#fff}
+.msg{min-height:18px;font-size:13px;color:var(--ok);margin-top:6px}
+textarea{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12px;font-family:monospace}
+.dcustom.hide{display:none}
+.wtop{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.wtop input{font-weight:700}
+.icon{flex:none;background:none;border:1px solid var(--line);color:var(--dim);border-radius:8px;width:40px;height:40px;font-size:18px;cursor:pointer}
+.icon:hover{color:var(--red);border-color:var(--red)}
+details{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+summary{cursor:pointer;color:var(--gold);font-size:13px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ "}
+details[open] summary::before{content:"▾ "}
+details .grid{margin-top:10px}
+.wres{margin-top:10px;font-size:13px;color:var(--dim);text-align:right}
+.wres b{color:var(--gold2);font-size:16px}
+.btn{width:100%;background:transparent;border:1px dashed var(--gold);color:var(--gold);padding:11px;border-radius:10px;font-size:15px;font-family:inherit;cursor:pointer;margin-bottom:14px}
+.btn:hover{background:rgba(212,162,76,.08)}
+.result{background:linear-gradient(160deg,#2b2117,#1b1612);border:1px solid var(--gold);border-radius:14px;padding:16px;margin-bottom:14px}
+.big{text-align:center;padding:4px 0 12px}
+.big .lbl{font-size:12px;color:var(--dim)}
+.big .num{font-family:Cinzel,serif;font-size:52px;color:var(--gold2);line-height:1.1}
+.big .sub{font-size:12px;color:var(--dim)}
+.steps{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px;border-top:1px solid var(--line);padding-top:10px}
+.steps div:nth-child(odd){color:var(--dim)}
+.steps div:nth-child(even){text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.steps .hl{color:var(--gold2)!important}
+.dist{margin-top:6px}
+.bar{display:grid;grid-template-columns:60px 1fr 52px;align-items:center;gap:8px;font-size:13px;margin:3px 0;font-variant-numeric:tabular-nums}
+.bar .t{height:14px;background:var(--panel2);border-radius:4px;overflow:hidden}
+.bar .f{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px}
+.bar span:first-child{color:var(--dim)}
+.bar span:last-child{text-align:right}
+.note{font-size:12px;color:var(--dim)}
+.target{display:flex;gap:10px;align-items:end;margin-bottom:10px}
+.target>div{flex:1}
+.kill{font-size:14px;margin-top:4px}
+.kill b{color:var(--gold2);font-size:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="en">AGE OF SIGMAR · UNOFFICIAL</div>
+  <h1>ダメージ期待値計算</h1>
+</header>
+
+<div class="card">
+  <h2>防御側</h2>
+  <div class="grid">
+    <div class="full"><label>保存キャラから選ぶ（防御力・加護をセット）</label>
+      <select id="defChar"></select></div>
+    <div><label>セーヴ</label>
+      <select id="save">
+        <option value="2">2+</option><option value="3">3+</option><option value="4" selected>4+</option>
+        <option value="5">5+</option><option value="6">6+</option><option value="7">なし</option>
+      </select></div>
+    <div><label>加護（ワード）</label>
+      <select id="ward">
+        <option value="0" selected>なし</option><option value="6">6+</option><option value="5">5+</option>
+        <option value="4">4+</option><option value="3">3+</option>
+      </select></div>
+    <div><label>セーヴ修正</label>
+      <select id="saveMod">
+        <option value="-1">−1</option><option value="0" selected>±0</option><option value="1">+1（遮蔽など）</option>
+      </select></div>
+  </div>
+</div>
+
+<div class="card" id="charCard">
+  <h2>攻撃側キャラクター</h2>
+  <label>保存済みキャラを呼び出す</label>
+  <select id="charList"></select>
+  <div class="grid" style="margin-top:10px">
+    <div class="full"><label>キャラ名</label><input id="charName" placeholder="例：インドラスタ"></div>
+    <div><label>このキャラの防御力</label>
+      <select id="charSave"><option value="2">2+</option><option value="3">3+</option><option value="4" selected>4+</option><option value="5">5+</option><option value="6">6+</option><option value="7">なし</option></select></div>
+    <div><label>このキャラの加護</label>
+      <select id="charWard"><option value="0" selected>なし</option><option value="6">6+</option><option value="5">5+</option><option value="4">4+</option><option value="3">3+</option></select></div>
+  </div>
+  <div class="brow">
+    <button class="sbtn gold" id="charSaveBtn">保存</button>
+    <button class="sbtn" id="charNew">新規（クリア）</button>
+    <button class="sbtn red" id="charDel">削除</button>
+  </div>
+  <div class="msg" id="charMsg"></div>
+  <details>
+    <summary>バックアップ（機種変更・再インストール用）</summary>
+    <p class="note">「書き出し」で出る文字をメモ等に保存しておき、復元時は貼り付けて「読み込み」。</p>
+    <textarea id="backup" rows="4"></textarea>
+    <div class="brow">
+      <button class="sbtn" id="bkOut">書き出し</button>
+      <button class="sbtn" id="bkCopy">コピー</button>
+      <button class="sbtn" id="bkIn">読み込み</button>
+    </div>
+  </details>
+</div>
+
+<div id="weapons"></div>
+<button class="btn" id="add">＋ 武器プロファイルを追加</button>
+
+<div class="result">
+  <div class="big">
+    <div class="lbl">与えるダメージの期待値</div>
+    <div class="num" id="total">0.00</div>
+    <div class="sub" id="totalSub"></div>
+  </div>
+  <div class="steps" id="steps"></div>
+</div>
+
+<div class="card">
+  <h2>ダメージの分布</h2>
+  <div class="target">
+    <div><label>相手の残りヘルス（合計）</label><input id="hp" type="number" min="1" value="10" inputmode="numeric"></div>
+  </div>
+  <div class="kill">合計 <span id="hpEcho">10</span> ダメージ以上を与える確率：<b id="killP">–</b></div>
+  <div class="dist" id="dist"></div>
+  <p class="note">20,000回のシミュレーションによる「Nダメージ以上を与える確率」。ダメージは余剰分も次のモデルに持ち越す前提です。</p>
+</div>
+
+<div class="card note">
+  <h2>計算ルール</h2>
+  ・ヒット／ウーンズは無修正の1で常に失敗、無修正の6で常に成功。<br>
+  ・クリティカルは無修正の6（振り直し後の出目）で判定。<br>
+  ・セーヴの必要値 ＝ セーヴ値 ＋ 貫通 − セーヴ修正。無修正の1は常に失敗。<br>
+  ・Crit (Mortal) はウーンズとセーヴを飛ばし、武器のダメージ分の致命傷ダメージ。<br>
+  ・加護はダメージ1点ごとに判定（致命傷ダメージにも適用）。<br>
+  ・入力・保存したキャラはお使いのブラウザ内にのみ保存され、外部には送信されません。<br>
+  ・攻撃回数・ダメージはリストから選択（D3・2D3・D6なども可）。リストにない値は「手入力…」で「2D6+1」などと入力。
+</div>
+  <p class="note" style="margin-top:14px;text-align:center">非公式のファンツールです。Games Workshop社とは一切関係ありません。<br>Warhammer、Age of Sigmar は Games Workshop Limited の商標です。</p>
+</div>
+
+<template id="wtpl">
+<div class="card weapon">
+  <div class="wtop">
+    <input class="f-name" value="武器">
+    <button class="icon del" title="削除">✕</button>
+  </div>
+  <div class="grid">
+    <div><label>モデル数</label><input class="f-models" type="number" min="1" value="1" inputmode="numeric"></div>
+    <div><label>攻撃回数</label><select class="s-atk dsel" data-for="f-atk"></select><input class="f-atk dcustom" value="2" placeholder="例: 2D6+1"></div>
+    <div><label>ヒット</label><select class="f-hit"></select></div>
+    <div><label>ウーンズ</label><select class="f-wound"></select></div>
+    <div><label>貫通</label><select class="f-rend"></select></div>
+    <div><label>ダメージ</label><select class="s-dmg dsel" data-for="f-dmg"></select><input class="f-dmg dcustom" value="1" placeholder="例: D6+2"></div>
+  </div>
+  <details>
+    <summary>修正・振り直し・クリティカル</summary>
+    <div class="grid">
+      <div class="full"><label>クリティカル（無修正6）</label>
+        <select class="f-crit">
+          <option value="none">なし</option>
+          <option value="2hits">Crit (2 Hits)：2ヒット</option>
+          <option value="auto">Crit (Auto-wound)：自動ウーンズ</option>
+          <option value="mortal">Crit (Mortal)：致命傷</option>
+        </select></div>
+      <div><label>ヒット修正</label><select class="f-hmod mod"></select></div>
+      <div><label>ヒット振り直し</label><select class="f-hrr rr"></select></div>
+      <div><label>ウーンズ修正</label><select class="f-wmod mod"></select></div>
+      <div><label>ウーンズ振り直し</label><select class="f-wrr rr"></select></div>
+    </div>
+  </details>
+  <div class="wres">この武器の期待値 <b class="out">0.00</b></div>
+</div>
+</template>
+
+<script>
+const $ = s => document.querySelector(s);
+const opts = (sel, list, def) => { sel.innerHTML = list.map(([v,t]) => `<option value="${v}"${v==def?' selected':''}>${t}</option>`).join(''); };
+
+function parseDice(str){
+  str = String(str).trim().toUpperCase().replace(/\s+/g,'');
+  let m = str.match(/^(\d+)$/);
+  if (m) return {n:0,x:0,k:+m[1]};
+  m = str.match(/^(\d*)D(\d+)([+-]\d+)?$/);
+  if (m) return {n: m[1]===''?1:+m[1], x:+m[2], k: m[3]?+m[3]:0};
+  return null;
+}
+const diceMean = d => d.n*(d.x+1)/2 + d.k;
+const rollDice = d => { let s=d.k; for(let i=0;i<d.n;i++) s += 1+Math.floor(Math.random()*d.x); return Math.max(0,s); };
+
+// probability of success on a d6 test (unmod 1 fails, unmod 6 succeeds)
+function rollProb(target, mod, rr){
+  const eff = target - mod;
+  let p = 0;
+  for (let r=1;r<=6;r++) if (r!==1 && (r===6 || r>=eff)) p++;
+  p/=6; let c=1/6;
+  const q = rr==='1s' ? 1/6 : rr==='fail' ? 1-p : 0;
+  return {p: p+q*p, c: c+q*c};
+}
+function saveProb(save, rend, mod){
+  const eff = save + rend - mod;
+  if (save>=7 || eff>6) return 0;
+  return (7-Math.max(2,eff))/6;
+}
+function testRoll(target, mod, rr){
+  const eff = target - mod;
+  const ok = r => r!==1 && (r===6 || r>=eff);
+  let r = 1+Math.floor(Math.random()*6);
+  if ((rr==='1s' && r===1) || (rr==='fail' && !ok(r))) r = 1+Math.floor(Math.random()*6);
+  return {ok: ok(r), crit: r===6};
+}
+
+function readWeapon(el){
+  const g = c => el.querySelector(c);
+  const atk = parseDice(g('.f-atk').value), dmg = parseDice(g('.f-dmg').value);
+  g('.f-atk').classList.toggle('bad', !atk);
+  g('.f-dmg').classList.toggle('bad', !dmg);
+  return {
+    el, name:g('.f-name').value, models:Math.max(1, parseInt(g('.f-models').value)||1),
+    atk, dmg, hit:+g('.f-hit').value, wound:+g('.f-wound').value, rend:+g('.f-rend').value,
+    crit:g('.f-crit').value, hmod:+g('.f-hmod').value, wmod:+g('.f-wmod').value,
+    hrr:g('.f-hrr').value, wrr:g('.f-wrr').value
+  };
+}
+function readDef(){ return {save:+$('#save').value, ward:+$('#ward').value, mod:+$('#saveMod').value}; }
+
+function expected(w, def){
+  if (!w.atk || !w.dmg) return null;
+  const A = diceMean(w.atk) * w.models, D = diceMean(w.dmg);
+  const h = rollProb(w.hit, w.hmod, w.hrr), wo = rollProb(w.wound, w.wmod, w.wrr);
+  let toWound, auto=0, mortalAtk=0, hits;
+  if (w.crit==='2hits'){ toWound = A*(h.p+h.c); hits = toWound; }
+  else if (w.crit==='auto'){ toWound = A*(h.p-h.c); auto = A*h.c; hits = A*h.p; }
+  else if (w.crit==='mortal'){ toWound = A*(h.p-h.c); mortalAtk = A*h.c; hits = A*h.p; }
+  else { toWound = A*h.p; hits = toWound; }
+  const wounds = toWound*wo.p + auto;
+  const sp = saveProb(def.save, w.rend, def.mod);
+  const unsaved = wounds*(1-sp);
+  const pre = (unsaved + mortalAtk)*D;
+  const wardP = def.ward ? (7-def.ward)/6 : 0;
+  return {A, hits, wounds, unsaved, mortalAtk, pre, final: pre*(1-wardP), sp, wardP};
+}
+
+function simulate(ws, def, N){
+  const wardOk = def.ward || 99, out = new Array(N);
+  for (let i=0;i<N;i++){
+    let total=0;
+    for (const w of ws){
+      const sp = saveProb(def.save, w.rend, def.mod);
+      for (let m=0;m<w.models;m++){
+        const a = rollDice(w.atk);
+        for (let k=0;k<a;k++){
+          const h = testRoll(w.hit, w.hmod, w.hrr);
+          if (!h.ok) continue;
+          let nW = 1, mortal=false, autoW=0;
+          if (h.crit){
+            if (w.crit==='2hits') nW = 2;
+            else if (w.crit==='auto'){ nW = 0; autoW = 1; }
+            else if (w.crit==='mortal'){ mortal = true; nW = 0; }
+          }
+          let dmgInst = 0;
+          if (mortal) dmgInst = 1;
+          let wounds = autoW;
+          for (let j=0;j<nW;j++) if (testRoll(w.wound, w.wmod, w.wrr).ok) wounds++;
+          for (let j=0;j<wounds;j++) if (!(Math.random() < sp)) dmgInst++;
+          for (let j=0;j<dmgInst;j++){
+            const d = rollDice(w.dmg);
+            for (let z=0;z<d;z++) if ((1+Math.floor(Math.random()*6)) < wardOk) total++;
+          }
+        }
+      }
+    }
+    out[i]=total;
+  }
+  return out;
+}
+
+const f2 = x => x.toFixed(2);
+let simTimer;
+function calc(){
+  const def = readDef();
+  const ws = [...document.querySelectorAll('.weapon')].map(readWeapon);
+  const sum = {A:0,hits:0,wounds:0,unsaved:0,mortalAtk:0,pre:0,final:0};
+  const valid = [];
+  for (const w of ws){
+    const r = expected(w, def);
+    w.el.querySelector('.out').textContent = r ? f2(r.final) : '入力エラー';
+    if (!r) continue;
+    valid.push(w);
+    for (const k in sum) sum[k]+=r[k];
+  }
+  $('#total').textContent = f2(sum.final);
+  const wardTxt = def.ward ? `加護${def.ward}+` : '加護なし';
+  $('#totalSub').textContent = `セーヴ${def.save>=7?'なし':def.save+'+'}・${wardTxt}`;
+  const rows = [
+    ['攻撃数', sum.A], ['ヒット（ウーンズロールへ）', sum.hits], ['ウーンズ成功', sum.wounds],
+    ['セーヴ失敗', sum.unsaved]
+  ];
+  if (sum.mortalAtk>0) rows.push(['Crit (Mortal) 発生', sum.mortalAtk]);
+  rows.push(['ダメージ（加護前）', sum.pre]);
+  $('#steps').innerHTML = rows.map(([a,b])=>`<div>${a}</div><div>${f2(b)}</div>`).join('')
+    + `<div class="hl">最終ダメージ</div><div class="hl">${f2(sum.final)}</div>`;
+  save();
+  clearTimeout(simTimer);
+  simTimer = setTimeout(()=>runSim(valid, def), 250);
+}
+
+let lastSim = null;
+function runSim(ws, def){
+  if (!ws.length){ $('#dist').innerHTML=''; $('#killP').textContent='–'; return; }
+  const N = 20000;
+  const res = simulate(ws, def, N);
+  const max = Math.max(...res);
+  const cnt = new Array(max+2).fill(0);
+  res.forEach(v=>cnt[v]++);
+  const atLeast = new Array(max+2).fill(0);
+  for (let v=max; v>=0; v--) atLeast[v] = (atLeast[v+1]||0) + cnt[v];
+  lastSim = {atLeast, N, max};
+  renderKill();
+  // show thresholds 1..upper where P(>=k) >= 1%
+  let upper = 1;
+  for (let k=1;k<=max;k++) if (atLeast[k]/N >= 0.01) upper = k;
+  const step = Math.max(1, Math.ceil(upper/20));
+  let html = '';
+  for (let k=1;k<=upper;k+=step){
+    const p = atLeast[k]/N*100;
+    html += `<div class="bar"><span>${k}以上</span><div class="t"><div class="f" style="width:${p}%"></div></div><span>${p.toFixed(1)}%</span></div>`;
+  }
+  $('#dist').innerHTML = html || '<p class="note">ダメージがほぼ発生しません。</p>';
+}
+function renderKill(){
+  const hp = Math.max(1, parseInt($('#hp').value)||1);
+  $('#hpEcho').textContent = hp;
+  if (!lastSim) return;
+  const p = hp > lastSim.max ? 0 : lastSim.atLeast[hp]/lastSim.N;
+  $('#killP').textContent = (p*100).toFixed(1)+'%';
+}
+
+const sixOpts = [2,3,4,5,6].map(v=>[v, v+'+']);
+const rendOpts = [0,1,2,3,4].map(v=>[v, v? '−'+v : '−']);
+const modOpts = [[-1,'−1'],[0,'±0'],[1,'+1']];
+const DICE = ['D3','D3+1','2D3','D6','D6+1','2D6'];
+const atkOpts = [...[1,2,3,4,5,6,7,8,9,10].map(v=>[v,v]), ...DICE.map(v=>[v,v]), ['custom','手入力…']];
+const dmgOpts = [...[1,2,3,4,5,6].map(v=>[v,v]), ...DICE.map(v=>[v,v]), ['custom','手入力…']];
+// select と テキスト入力（保存・計算に使う値）を同期
+function syncDice(node){
+  node.querySelectorAll('.dsel').forEach(sel=>{
+    const inp = node.querySelector('.'+sel.dataset.for);
+    const v = inp.value.trim().toUpperCase().replace(/\s+/g,'');
+    const hit = [...sel.options].find(o=>o.value===v);
+    sel.value = hit ? v : 'custom';
+    inp.classList.toggle('hide', sel.value!=='custom');
+    sel.onchange = () => {
+      if (sel.value!=='custom') inp.value = sel.value;
+      inp.classList.toggle('hide', sel.value!=='custom');
+      if (sel.value==='custom') inp.focus();
+    };
+  });
+}
+const rrOpts = [['none','なし'],['1s','1を振り直し'],['fail','失敗を振り直し']];
+
+function addWeapon(data){
+  const node = $('#wtpl').content.firstElementChild.cloneNode(true);
+  opts(node.querySelector('.f-hit'), sixOpts, 4);
+  opts(node.querySelector('.f-wound'), sixOpts, 3);
+  opts(node.querySelector('.f-rend'), rendOpts, 1);
+  node.querySelectorAll('.mod').forEach(s=>opts(s, modOpts, 0));
+  node.querySelectorAll('.rr').forEach(s=>opts(s, rrOpts, 'none'));
+  opts(node.querySelector('.s-atk'), atkOpts, 2);
+  opts(node.querySelector('.s-dmg'), dmgOpts, 1);
+  if (data) for (const k in data){ const e=node.querySelector('.'+k); if(e) e.value=data[k]; }
+  else node.querySelector('.f-name').value = '武器 ' + (document.querySelectorAll('.weapon').length+1);
+  syncDice(node);
+  node.querySelector('.del').onclick = () => { node.remove(); calc(); };
+  node.addEventListener('input', calc);
+  node.addEventListener('change', calc);
+  $('#weapons').appendChild(node);
+}
+
+const FIELDS = ['f-name','f-models','f-atk','f-hit','f-wound','f-rend','f-dmg','f-crit','f-hmod','f-hrr','f-wmod','f-wrr'];
+function save(){
+  try{
+    const ws = [...document.querySelectorAll('.weapon')].map(el=>{
+      const o={}; FIELDS.forEach(f=>o[f]=el.querySelector('.'+f).value); return o; });
+    localStorage.setItem('aosDmg', JSON.stringify({ws, charName:$('#charName').value, charSave:$('#charSave').value, charWard:$('#charWard').value, save:$('#save').value, ward:$('#ward').value, saveMod:$('#saveMod').value, hp:$('#hp').value}));
+  }catch(e){}
+}
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem('aosDmg'));
+    if (d && d.ws && d.ws.length){
+      $('#save').value=d.save; $('#ward').value=d.ward; $('#saveMod').value=d.saveMod; if(d.hp) $('#hp').value=d.hp; if(d.charName!=null){ $('#charName').value=d.charName; $('#charSave').value=d.charSave||'4'; $('#charWard').value=d.charWard||'0'; }
+      d.ws.forEach(addWeapon); return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+// ===== キャラクター保存 =====
+const PRESETS = [];
+let chars = [];
+function loadChars(){
+  try{ const c = JSON.parse(localStorage.getItem('aosChars')); if (Array.isArray(c)) { chars = c; return; } }catch(e){}
+  chars = JSON.parse(JSON.stringify(PRESETS));
+}
+function storeChars(){ try{ localStorage.setItem('aosChars', JSON.stringify(chars)); }catch(e){} }
+const esc = t => String(t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function renderCharLists(selName){
+  chars.sort((a,b)=>a.name.localeCompare(b.name,'ja'));
+  const o = chars.map((c,i)=>`<option value="${i}">${esc(c.name)}</option>`).join('');
+  $('#charList').innerHTML = `<option value="">— ${chars.length}件保存中・選んで呼び出し —</option>` + o;
+  $('#defChar').innerHTML = `<option value="">— 選択しない —</option>` + chars.map((c,i)=>
+    `<option value="${i}">${esc(c.name)}（${c.save>=7?'セーヴなし':c.save+'+'}${+c.ward?'・加護'+c.ward+'+':''}）</option>`).join('');
+  if (selName!=null){ const i = chars.findIndex(c=>c.name===selName); $('#charList').value = i>=0 ? i : ''; }
+}
+function currentWeapons(){
+  return [...document.querySelectorAll('.weapon')].map(el=>{ const o={}; FIELDS.forEach(f=>o[f]=el.querySelector('.'+f).value); return o; });
+}
+let msgTimer;
+function msg(t, bad){ const m=$('#charMsg'); m.textContent=t; m.style.color = bad?'var(--red)':'var(--ok)'; clearTimeout(msgTimer); msgTimer=setTimeout(()=>m.textContent='',3000); }
+function disarm(){ $('#charDel').classList.remove('armed'); $('#charDel').textContent='削除'; }
+
+$('#charList').addEventListener('change', ()=>{
+  disarm();
+  const c = chars[$('#charList').value]; if (!c) return;
+  $('#weapons').innerHTML=''; c.ws.forEach(addWeapon);
+  $('#charName').value = c.name; $('#charSave').value = c.save; $('#charWard').value = c.ward;
+  calc(); msg(`「${c.name}」を呼び出しました`);
+});
+$('#defChar').addEventListener('change', ()=>{
+  const c = chars[$('#defChar').value]; if (!c) return;
+  $('#save').value = c.save; $('#ward').value = c.ward; calc();
+});
+$('#charSaveBtn').onclick = ()=>{
+  const name = $('#charName').value.trim();
+  if (!name){ msg('キャラ名を入力してください', true); $('#charName').focus(); return; }
+  const data = {name, save:$('#charSave').value, ward:$('#charWard').value, ws:currentWeapons()};
+  const i = chars.findIndex(c=>c.name===name);
+  if (i>=0) chars[i]=data; else chars.push(data);
+  storeChars(); renderCharLists(name); save();
+  msg(i>=0 ? `「${name}」を上書き保存しました` : `「${name}」を保存しました`);
+};
+$('#charNew').onclick = ()=>{
+  disarm();
+  $('#weapons').innerHTML=''; addWeapon();
+  $('#charName').value=''; $('#charSave').value='4'; $('#charWard').value='0'; $('#charList').value='';
+  calc(); msg('新しいキャラを入力できます');
+};
+$('#charDel').onclick = ()=>{
+  const name = $('#charName').value.trim();
+  const i = chars.findIndex(c=>c.name===name);
+  if (i<0){ msg('保存済みキャラを呼び出してから削除してください', true); return; }
+  const b = $('#charDel');
+  if (!b.classList.contains('armed')){ b.classList.add('armed'); b.textContent='もう一度押すと削除'; setTimeout(disarm,3000); return; }
+  disarm(); chars.splice(i,1); storeChars(); renderCharLists(''); msg(`「${name}」を削除しました`);
+};
+$('#bkOut').onclick = ()=>{ $('#backup').value = JSON.stringify(chars); $('#backup').select(); msg(`${chars.length}件を書き出しました`); };
+$('#bkCopy').onclick = async ()=>{
+  if (!$('#backup').value) $('#backup').value = JSON.stringify(chars);
+  try{ await navigator.clipboard.writeText($('#backup').value); msg('コピーしました'); }
+  catch(e){ $('#backup').select(); try{ document.execCommand('copy'); msg('コピーしました'); }catch(e2){ msg('長押しでコピーしてください', true); } }
+};
+$('#bkIn').onclick = ()=>{
+  try{
+    const arr = JSON.parse($('#backup').value);
+    if (!Array.isArray(arr) || !arr.every(c=>c && c.name && Array.isArray(c.ws))) throw 0;
+    let n=0; arr.forEach(c=>{ const i=chars.findIndex(x=>x.name===c.name); if(i>=0) chars[i]=c; else chars.push(c); n++; });
+    storeChars(); renderCharLists($('#charName').value.trim()); msg(`${n}件を読み込みました`);
+  }catch(e){ msg('読み込めませんでした。書き出した文字をそのまま貼ってください', true); }
+};
+['#charName','#charSave','#charWard'].forEach(s=>$(s).addEventListener('change', save));
+
+['#save','#ward','#saveMod'].forEach(s=>$(s).addEventListener('change', calc));
+$('#hp').addEventListener('input', ()=>{ renderKill(); save(); });
+$('#add').onclick = () => { addWeapon(); calc(); };
+loadChars(); renderCharLists(null);
+if (!load()) addWeapon({'f-name':'近接武器','f-models':5,'f-atk':'2','f-dmg':'1'});
+renderCharLists($('#charName').value.trim());
+calc();
+if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js'); } catch(e){} }
+</script>
+</body>
+</html>
