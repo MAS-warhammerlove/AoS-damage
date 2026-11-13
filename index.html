@@ -121,6 +121,7 @@ input.bad{border-color:var(--crimson);background:rgba(140,43,34,.08)}
   border-bottom:1px dashed #b8a274;border-radius:0;padding:4px 2px;flex:1;min-width:0;
 }
 .models{display:flex;align-items:center;gap:4px;flex:none;font-size:14px;font-weight:700;color:var(--ink-soft)}
+.models select{width:74px;text-align:center;text-align-last:center;padding:5px 18px 5px 4px;background-position:right 6px center;font-family:var(--numeral);font-weight:700;font-size:19px}
 .models input{width:56px;text-align:center;padding:6px 4px;font-family:var(--numeral);font-weight:700;font-size:19px}
 .del{
   flex:none;width:36px;height:36px;border-radius:50%;border:1px solid #b8a274;background:transparent;
@@ -220,6 +221,39 @@ textarea{font-size:12px;font-family:ui-monospace,Menlo,monospace;margin-top:6px}
 .help ol{margin:12px 0 8px;padding-left:22px}
 .help p{margin:0}
 
+
+
+/* ---------- 期待ダメージの大メダル ---------- */
+.verdict{padding:34px 16px 22px;background:radial-gradient(70% 45% at 50% 30%,#2a4170 0%,transparent 70%),linear-gradient(180deg,#1b2a4a,#0d162b)}
+.verdict::before{content:"";position:absolute;inset:7px;pointer-events:none;border:1px solid rgba(180,138,60,.35);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath d='M1 25V1h24' fill='none' stroke='%23d4a74e' stroke-width='2'/%3E%3Cpath d='M7 7l4-4 4 4-4 4z' fill='%23ecd18a'/%3E%3C/svg%3E") top left no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath d='M25 25V1H1' fill='none' stroke='%23d4a74e' stroke-width='2'/%3E%3Cpath d='M19 7l-4-4-4 4 4 4z' fill='%23ecd18a'/%3E%3C/svg%3E") top right no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath d='M1 1v24h24' fill='none' stroke='%23d4a74e' stroke-width='2'/%3E%3Cpath d='M7 19l4 4 4-4-4-4z' fill='%23ecd18a'/%3E%3C/svg%3E") bottom left no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Cpath d='M25 1v24H1' fill='none' stroke='%23d4a74e' stroke-width='2'/%3E%3Cpath d='M19 19l-4 4-4-4 4-4z' fill='%23ecd18a'/%3E%3C/svg%3E") bottom right no-repeat;}
+.medal{position:relative;width:260px;height:260px;margin:18px auto 34px;display:flex;align-items:center;justify-content:center}
+.medal-svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55))}
+.rays{position:absolute;inset:-56px;border-radius:50%;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg,rgba(236,209,138,.26) 0deg 3deg,transparent 3deg 11.25deg);
+  -webkit-mask-image:radial-gradient(circle,#000 38%,transparent 71%);mask-image:radial-gradient(circle,#000 38%,transparent 71%);
+  animation:spin 140s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.burst{position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,rgba(255,238,180,.75) 0%,rgba(236,209,138,.35) 40%,transparent 68%)}
+.medal.flash .burst{animation:burst .75s ease-out}
+@keyframes burst{0%{opacity:.9;transform:scale(.7)}100%{opacity:0;transform:scale(1.45)}}
+.crest{position:absolute;top:-24px;left:50%;width:52px;height:52px;margin-left:-26px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.medal .num{position:relative;font-family:var(--numeral);font-weight:700;font-size:80px;line-height:1;margin-top:-6px;letter-spacing:-.01em;
+  background:linear-gradient(180deg,#fff4c9 8%,#f0cf78 40%,#c08f3c 62%,#f3d891 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 0 #2a1d06) drop-shadow(0 0 14px rgba(236,209,138,.4))}
+.medal .num.long{font-size:62px}
+.medal .num.xlong{font-size:48px}
+.ribbon{position:absolute;bottom:-20px;left:50%;width:214px;margin-left:-107px;height:40px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+.ribbon span{display:block;height:100%;line-height:36px;text-align:center;color:#fbf0d6;font-weight:800;font-size:16px;letter-spacing:.32em;text-indent:.32em;
+  background:linear-gradient(180deg,#b13a31 0%,#8a241d 55%,#5f1712 100%);border-top:2px solid #e8c674;border-bottom:2px solid #a37a2e;
+  clip-path:polygon(0 0,100% 0,91% 50%,100% 100%,0 100%,9% 50%)}
+.verdict .sub{margin-top:4px}
+@media (prefers-reduced-motion:reduce){.rays{animation:none}.medal.flash .burst{animation:none}}
 footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top:26px}
 </style>
 </head>
@@ -301,9 +335,33 @@ footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top
 <button class="addbtn" id="add">＋ 武器を追加</button>
 
 <section class="verdict" aria-live="polite">
-  <div class="seal" id="seal">
-    <div class="lbl">期待ダメージ</div>
+  <div class="medal" id="seal">
+    <div class="rays" aria-hidden="true"></div>
+    <div class="burst" aria-hidden="true"></div>
+    <svg class="medal-svg" viewBox="0 0 260 260" aria-hidden="true">
+      <defs>
+        <linearGradient id="mGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe7a6"/><stop offset=".42" stop-color="#d4a74e"/><stop offset=".58" stop-color="#9c6f29"/><stop offset="1" stop-color="#e9c977"/></linearGradient>
+        <linearGradient id="mGold2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f6dc93"/><stop offset=".5" stop-color="#b88a3a"/><stop offset="1" stop-color="#7a5820"/></linearGradient>
+        <radialGradient id="mEnamel" cx=".5" cy=".36" r=".72"><stop offset="0" stop-color="#3a5b9c"/><stop offset=".55" stop-color="#18264a"/><stop offset="1" stop-color="#0a1226"/></radialGradient>
+        <radialGradient id="mStud" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff5cf"/><stop offset=".5" stop-color="#d1a14a"/><stop offset="1" stop-color="#6e4f1a"/></radialGradient>
+      </defs>
+      <circle cx="130" cy="130" r="128" fill="#3d2b0b"/>
+      <circle cx="130" cy="130" r="125" fill="url(#mGold)"/>
+      <circle cx="130" cy="130" r="119.5" fill="none" stroke="#5e4214" stroke-width="5" stroke-dasharray="1.6 4.65"/>
+      <circle cx="130" cy="130" r="113" fill="url(#mGold2)" stroke="#5a4013" stroke-width="1"/>
+      <circle cx="226.5" cy="170.0" r="4.2" fill="url(#mStud)" stroke="#4a3510" stroke-width=".8"/><circle cx="170.0" cy="226.5" r="4.2" fill="url(#mStud)" stroke="#4a3510" stroke-width=".8"/><circle cx="90.0" cy="226.5" r="4.2" fill="url(#mStud)" stroke="#4a3510" stroke-width=".8"/><circle cx="33.5" cy="170.0" r="4.2" fill="url(#mStud)" stroke="#4a3510" stroke-width=".8"/><circle cx="33.5" cy="90.0" r="4.2" fill="url(#mStud)" stroke="#4a3510" stroke-width=".8"/><circle cx="90.0" cy="33.5" r="4.2" fill="url(#mStud)" stroke="#4a3510" stroke-width=".8"/><circle cx="170.0" cy="33.5" r="4.2" fill="url(#mStud)" stroke="#4a3510" stroke-width=".8"/><circle cx="226.5" cy="90.0" r="4.2" fill="url(#mStud)" stroke="#4a3510" stroke-width=".8"/>
+      <circle cx="130" cy="130" r="97" fill="#2e2108"/>
+      <circle cx="130" cy="130" r="94" fill="url(#mEnamel)"/>
+      <circle cx="130" cy="130" r="86" fill="none" stroke="#d0a24c" stroke-width="1.2" opacity=".75"/>
+      <circle cx="130" cy="130" r="82" fill="none" stroke="#d0a24c" stroke-width=".6" opacity=".45" stroke-dasharray="2 3.2"/>
+      <ellipse cx="130" cy="84" rx="64" ry="26" fill="#fff" opacity=".07"/>
+    </svg>
+    <svg class="crest" viewBox="0 0 60 60" aria-hidden="true">
+      <path d="M30 2l6 18 18-6-12 15 12 15-18-6-6 18-6-18-18 6 12-15L6 14l18 6z" fill="url(#mGold)" stroke="#4a3510" stroke-width="1.5"/>
+      <circle cx="30" cy="29" r="6" fill="url(#mEnamel)" stroke="#4a3510" stroke-width="1"/>
+    </svg>
     <div class="num" id="total">0.00</div>
+    <div class="ribbon"><span>期待ダメージ</span></div>
   </div>
   <div class="sub" id="totalSub"></div>
   <div class="steps" id="steps"></div>
@@ -340,7 +398,7 @@ footer{text-align:center;font-size:13px;color:#c2b796;line-height:1.9;margin-top
 <section class="scroll weapon">
   <div class="wtop">
     <input class="f-name" value="武器" aria-label="武器の名前">
-    <span class="models">×<input class="f-models" type="number" min="1" value="1" inputmode="numeric" aria-label="モデル数">体</span>
+    <span class="models">×<select class="s-models dsel" data-for="f-models" aria-label="モデル数"></select><input class="f-models dcustom" type="number" min="1" value="1" inputmode="numeric" aria-label="モデル数（手入力）">体</span>
     <button class="del" title="この武器を削除" aria-label="この武器を削除">✕</button>
   </div>
   <div class="profile">
@@ -474,6 +532,23 @@ function simulate(ws, def, N){
 }
 
 const f2 = x => x.toFixed(2);
+// 期待ダメージをカウントアップ表示し、メダルを光らせる
+let shownTotal = 0, totalRaf = 0, lastTotal = null;
+function animateTotal(v){
+  const el = document.getElementById('total'), seal = document.getElementById('seal');
+  const fit = x => { const t = x.toFixed(2); el.classList.toggle('long', t.length===6); el.classList.toggle('xlong', t.length>6); return t; };
+  if (v === lastTotal) return; lastTotal = v;
+  seal.classList.remove('flash'); void seal.offsetWidth; seal.classList.add('flash');
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.requestAnimationFrame || reduce){ shownTotal = v; el.textContent = fit(v); return; }
+  cancelAnimationFrame(totalRaf);
+  const from = shownTotal, t0 = performance.now(), dur = 600;
+  const step = t => { const p = Math.min(1,(t-t0)/dur), e = 1-Math.pow(1-p,3);
+    shownTotal = from + (v-from)*e; el.textContent = fit(shownTotal);
+    if (p<1) totalRaf = requestAnimationFrame(step); else { shownTotal = v; el.textContent = fit(v); } };
+  totalRaf = requestAnimationFrame(step);
+}
+
 let simTimer;
 function calc(){
   const def = readDef();
@@ -487,7 +562,7 @@ function calc(){
     valid.push(w);
     for (const k in sum) sum[k]+=r[k];
   }
-  $('#total').textContent = f2(sum.final);
+  animateTotal(sum.final);
   const wardTxt = def.ward ? `加護${def.ward}+` : '加護なし';
   $('#totalSub').textContent = `セーヴ${def.save>=7?'なし':def.save+'+'}・${wardTxt}`;
   const rows = [
@@ -539,6 +614,7 @@ const rendOpts = [0,1,2,3,4].map(v=>[v, v? '−'+v : '−']);
 const modOpts = [[-1,'−1'],[0,'±0'],[1,'+1']];
 const DICE = ['D3','D3+1','2D3','D6','D6+1','2D6'];
 const atkOpts = [...[1,2,3,4,5,6,7,8,9,10].map(v=>[v,v]), ...DICE.map(v=>[v,v]), ['custom','手入力…']];
+const modelOpts = [...Array.from({length:20},(_,i)=>[i+1,i+1]), [25,25],[30,30],[40,40], ['custom','手入力…']];
 const dmgOpts = [...[1,2,3,4,5,6].map(v=>[v,v]), ...DICE.map(v=>[v,v]), ['custom','手入力…']];
 // select と テキスト入力（保存・計算に使う値）を同期
 function syncDice(node){
@@ -566,6 +642,7 @@ function addWeapon(data){
   node.querySelectorAll('.rr').forEach(s=>opts(s, rrOpts, 'none'));
   opts(node.querySelector('.s-atk'), atkOpts, 2);
   opts(node.querySelector('.s-dmg'), dmgOpts, 1);
+  opts(node.querySelector('.s-models'), modelOpts, 1);
   if (data) for (const k in data){ const e=node.querySelector('.'+k); if(e) e.value=data[k]; }
   else node.querySelector('.f-name').value = '武器 ' + (document.querySelectorAll('.weapon').length+1);
   syncDice(node);
@@ -676,15 +753,6 @@ if (!load()) addWeapon({'f-name':'近接武器','f-models':5,'f-atk':'2','f-dmg'
 renderCharLists($('#charName').value.trim());
 calc();
 
-// 結果が変わったら印章を光らせる
-(() => {
-  const seal = document.getElementById('seal'); let last = null;
-  new MutationObserver(() => {
-    const v = document.getElementById('total').textContent;
-    if (v === last) return; last = v;
-    seal.classList.remove('flash'); void seal.offsetWidth; seal.classList.add('flash');
-  }).observe(document.getElementById('total'), {childList:true, characterData:true, subtree:true});
-})();
 if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js'); } catch(e){} }
 </script>
 </body>
